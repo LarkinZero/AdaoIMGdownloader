@@ -23,7 +23,8 @@ def send_request(threadid,page):
     except requests.exceptions.RequestException as e:
         print('HTTP Request failed')
 
-def get_img(threadsid):
+def get_img(threadsid,path):
+
     path = path+str(threadsid)
     os.system('mkdir '+path+'/')
 
@@ -36,16 +37,10 @@ def get_img(threadsid):
     os.system('wget -P '+path+' '+imgurl)
     # print totalpage
     for page in range(1,totalpage+1):
-        print page
+        print "正在处理第"+str(page)+"页"
         tempvalue = send_request(threadsid,page)
         o = json.loads(tempvalue)
-        replyrange = totalreplay-(page-1)*20
-        if replyrange>20:
-            replyrange = 20
-            # print "~"+str(replyrange)
-        else:
-            replyrange = totalreplay-(page-1)*20
-            # print "~"+str(replyrange)
+        replyrange = len(o['replys'])
         # print o['replys'][1]['image']
         for replys in range(1,replyrange):
             replysimg = str(o['replys'][replys]['image'])
@@ -53,8 +48,6 @@ def get_img(threadsid):
                 imgurl = imghost+replysimg
                 # print imgurl
                 os.system('wget -P '+path+' '+imgurl)
-        
-
 
 imghost = "http://static.koukuko.com/h/"
 path = "/Volumes/Transcend/Temp/Adao/"
@@ -64,5 +57,6 @@ if len(sys.argv)==1:
     print "请运行时加入串ID作为参数"
 else:
     threadsid = sys.argv[1]
-    get_img(threadsid)
+    print threadsid
+    get_img(threadsid,path)
 
