@@ -62,11 +62,11 @@ else:
     print threadsid
     hostid = sys.argv[2]
     print hostid
-    if hostid == 1:
+    if hostid == "1":
         host = "http://h.koukuko.com/api/t/"
-        imghost = "http://static.nimingban.com/h/"
+        imghost = "http://static.koukuko.com/h/"
         get_img(host,threadsid,path)
-    elif hostid == 0:
+    elif hostid == "0":
         host = "http://h.nimingban.com/api/t/"
         imghost = "http://cdn.ovear.info:8999/"
         get_img(host,threadsid,path)
