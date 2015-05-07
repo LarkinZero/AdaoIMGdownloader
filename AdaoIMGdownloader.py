@@ -7,12 +7,14 @@ import json
 import os
 import sys
 
-def send_request(threadid,page):
+def send_request(host,threadid,page):
     # My API (11) (GET http://h.acfun.tv/api/t/117617)
 
     try:
         r = requests.get(
-            url="http://h.koukuko.com/api/t/"+str(threadid),
+            url=host+str(threadid),
+            # url="http://h.koukuko.com/api/t/"+str(threadid),
+
             params = {
                 "page":str(page),
             },
@@ -23,22 +25,22 @@ def send_request(threadid,page):
     except requests.exceptions.RequestException as e:
         print('HTTP Request failed')
 
-def get_img(threadsid,path):
+def get_img(host,threadsid,path):
 
     path = path+str(threadsid)
     os.system('mkdir '+path+'/')
 
-    value = send_request(threadsid,1)
+    value = send_request(host,threadsid,1)
     o = json.loads(value)
     imgurl = imghost+str(o['threads']['image'])
     # print o['replys'][1]['image']
     totalreplay = int(o['threads']['replyCount'])
     totalpage = int(o['page']['size'])
-    os.system('wget -P '+path+' '+imgurl)
+    os.system('wget -nc -P '+path+' '+imgurl)
     # print totalpage
     for page in range(1,totalpage+1):
         print "正在处理第"+str(page)+"页"
-        tempvalue = send_request(threadsid,page)
+        tempvalue = send_request(host,threadsid,page)
         o = json.loads(tempvalue)
         replyrange = len(o['replys'])
         # print o['replys'][1]['image']
@@ -47,16 +49,27 @@ def get_img(threadsid,path):
             if replysimg != "":
                 imgurl = imghost+replysimg
                 # print imgurl
-                os.system('wget -P '+path+' '+imgurl)
+                os.system('wget -nc -P '+path+' '+imgurl)
 
-imghost = "http://static.koukuko.com/h/"
+
 path = "/Volumes/Transcend/Temp/Adao/"
 
 #print len(sys.argv)
 if len(sys.argv)==1:
-    print "请运行时加入串ID作为参数"
+    print "运行参数：[串ID] [0或1；0为匿名岛，1为备胎岛]"
 else:
     threadsid = sys.argv[1]
     print threadsid
-    get_img(threadsid,path)
+    hostid = sys.argv[2]
+    print hostid
+    if hostid == 1:
+        host = "http://h.koukuko.com/api/t/"
+        imghost = "http://static.nimingban.com/h/"
+        get_img(host,threadsid,path)
+    elif hostid == 0:
+        host = "http://h.nimingban.com/api/t/"
+        imghost = "http://cdn.ovear.info:8999/"
+        get_img(host,threadsid,path)
+    else:
+        print "运行参数：[串ID] [0或1；0为匿名岛，1为备胎岛]"
 
